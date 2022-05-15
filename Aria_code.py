@@ -63,7 +63,23 @@ class Game:
         self.crown_count = {name: 0 for name in self.players}
         self.win_condition = win_condition
 
-
+    def player_move(self, player, die_roll):
+        """Rolls the die and moves the player the appropriate amount of spaces.
+        Args:
+            player(str): Player whose turn it is.
+            die_roll(int between 1-6): Players roll on the die.
+        Returns:
+            The player's current position
+        Side effect:
+            Updates player position.
+        """
+        self.player_position[player] += die_roll
+        self.player_position[player] %= len(board)
+        position = self.player_position[player] + 1
+        print(f"You rolled a {die_roll}!")
+        print(f"{player}'s new position is tile {position}"
+              f", and you landed on a {board[position - 1]} space")
+        return position - 1
 
 
 
@@ -116,8 +132,87 @@ class Game:
             self.coin_count[player] -= 35
             self.crown_count[player] += 1
 
+    def rock_paper_scissors(self):
+        """Runs a game of Rock Paper Scissors against the computer every 3 turns.
 
+        Side Effects:
+            Prints the rules of the game and the amount of coins the player will bet.
+            Prints the outcome of the RPS game.
+            Updates the player's coin amount based on outcome of RPS.
+        """
+        print("\nIt's time to make this more interesting by gambling in a game of Rock Paper Scissors!")
+        print(
+            "\nThe rules: Rock crushes Scissors. Scissors cuts Paper. Paper covers Rock. If you win, you will double "
+            "your wager. But if you lose, those coins are gone forever!")
+        print(
+            "\nYou don't want to wager? Too Bad! 10 coins is the cost to play! There will be no penalty or reward in "
+            "the event of a tie.")
+        for player in self.players:
+            if self.coin_count[player] == 0:
+                print(f"Jeez man. You're extra downbad... looks like {player} can't even afford to play with their "
+                  f"friends. Everyone should laugh at them.")
+                continue
+            print(f"\nTime to make your move, {player}")
+            playerChoice = int(input("Choose: 1 (Rock), 2 (Paper), or 3 (Scissors): "))
+            # if choice not made between 1-3 then input will be asked for again
+            while playerChoice > 3 or playerChoice < 1:
+                playerChoice = int(input("Please enter a valid input: "))
+                # playerMove is assigned value based on playerChoice
+            if playerChoice == 1:
+                playerMove = "Rock"
+            elif playerChoice == 2:
+                playerMove = "Paper"
+            else:
+                playerMove = "Scissors"
+            print(f"{player}'s choice is: " + playerMove)
+            # range 1-3 as there are 3 moves and a random move will be chosen
+            computerChoice = r.randint(1, 3)
+            # computerMove is assigned value based on computerChoice
+            if computerChoice == 1:
+                computerMove = "Rock"
+            elif computerChoice == 2:
+                computerMove = "Paper"
+            else:
+                computerMove = "Scissors"
+            print("The computer chooses: " + computerMove)
+            if ((playerChoice == 1 and computerChoice == 2) or (playerChoice == 2 and computerChoice == 1)):
+                print("Paper Wins!")
+                winner = "Paper"
+            elif ((playerChoice == 1 and computerChoice == 3) or (playerChoice == 3 and computerChoice == 1)):
+                print("Rock Wins!")
+                winner = "Rock"
+            elif playerChoice == computerChoice:
+                print("Tie!")
+                winner = "Nobody"
+            else:
+                print("Scissors Wins!")
+                winner = "Scissors"
+            # winner assigned and printed out
+            if winner == playerMove:
+                if self.coin_count[player] < 10:
+                    print(f"\nYou win! You will now be awarded {self.coin_count[player]} coins!")
+                    self.coin_count[player] *= 2
+                else:
+                    self.coin_count[player] += 10
+                    print("\nYou win! You will now be awarded 10 coins!")
+            elif winner == "Nobody":
+                print("\nIt's a tie! Breaking even is better than losing!")
+            else:
+                print("\nComputer wins! Wow... this is really embarrassing. Maybe you shouldn't gamble anymore because "
+                    "this is rough to watch. Hand over those coins, loser!")
+                if self.coin_count[player] < 10:
+                    self.coin_count[player] = 0
+                else:
+                    self.coin_count[player] -= 10
 
+    def jackpot(self, player):
+        """Controls events of the jackpot tile
+        Args:
+            player(int between 0-2): Player whose turn it is.
+        Side effect:
+            Updating dictionary that stores players crown points.
+        """
+        self.crown_count[player] += 1
 
     def __str__(self):
         """ Magic Method that displays the coin count, crown point count, and board position
