@@ -9,3 +9,4 @@ The program itself has instructions when it starts running on how to play the ga
 Aria: Set our global variables, created the class. Methods were __init__, playround, addcrown, __str__.
 Veer: Did the parseargs function, the process_tile method, and the isgameover method.
 Alex: Did the rock paper scisors method, the player move method, and the jackpot method.
+We did not use any outside sources.
